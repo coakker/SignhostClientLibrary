@@ -1,0 +1,20 @@
+Private Async Function PushIT() As Task
+        Dim client = New SignHostApiClient(New SignHostApiClientSettings("AppName appkey", "apikey"))
+
+        Dim transaction = Await client.CreateTransaction(New Transaction() With {
+                                                         .Signers = New List(Of Signer) From
+                                                            {New Signer() With
+                                                                {.Email = "john.doe@example.com",
+                                                                .ScribbleName = "John Doe",
+                                                                .SignRequestMessage = "Could you please sign this document?",
+                                                                .SendSignRequest = True}
+                                                                }
+                                                            })
+
+        Await client.AddOrReplaceFileToTransaction("PathToFile", transaction.Id, "First document")
+        Await client.AddOrReplaceFileToTransaction("PathOtherFile", transaction.Id, "General agreement")
+
+        ' When everything is setup we can start the transaction flow 
+
+        Await client.StartTransaction(transaction.Id)
+End Function
